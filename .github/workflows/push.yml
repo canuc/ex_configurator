@@ -2,7 +2,7 @@ on: push
 
 jobs:
   format:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Check formatting
     steps:
       - uses: actions/checkout@v2
@@ -10,20 +10,22 @@ jobs:
         with:
           otp-version: '22.2'
           elixir-version: '1.9.4'
+          experimental-otp: true
       - run: mix deps.get
       - run: mix format --check-formatted
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
         otp: ['20.3', '21.3', '22.2']
-        elixir: ['1.8.2', '1.9.4']
+        elixir: ['1.8.2', '1.9.4', '1.13.4', '1.12.3', '1.11.4']
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-elixir@v1
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
+          experimental-otp: true
       - run: mix deps.get
       - run: mix test
