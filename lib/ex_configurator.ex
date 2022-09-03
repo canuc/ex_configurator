@@ -74,7 +74,7 @@ defmodule ExConfigurator do
 
   require Logger
 
-  def handle_config(application, path, config_name, var, submodule) when is_struct(var) do
+  def handle_config(application, path, config_name, var, submodule) when is_map(var) do
     quoted = generate_config_function(application, path, config_name, var, submodule)
 
     sub_quoted =
