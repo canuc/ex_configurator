@@ -69,7 +69,7 @@ defmodule ExConfigurator do
   If a compile time config is set to a tuple starting with `:system` of form: {:system, :integer | :string, "MY_ENV", 3434}
 
   then when calling `SomeModule.get_keys/0` the replaced method will lookup the system environment variable: "MY_ENV" and cast it to
-  either string or integer value.
+  either string or integer value. No `get_env_keys/0` method will be generated in this case.
   """
 
   require Logger
@@ -114,7 +114,7 @@ defmodule ExConfigurator do
   def clean_default_int(int) when is_binary(int), do: int
   def clean_default_int(int) when is_integer(int), do: Integer.to_string(int)
 
-  def clean_defualt_string(string), do: to_string(string)
+  def clean_default_string(string), do: to_string(string)
 
   def generate_config_function_inner(
         _application,
@@ -146,12 +146,8 @@ defmodule ExConfigurator do
       when is_binary(name) do
     quote do
       def unquote(:"get_#{path_name}")() do
-        {default_int, rest} =
-          unquote(name)
-          |> System.get_env(unquote(clean_defualt_string(default_val)))
-          |> to_string()
-
-        default_int
+        unquote(name)
+        |> System.get_env(unquote(clean_default_string(default_val)))
       end
     end
   end
