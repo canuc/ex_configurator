@@ -138,4 +138,42 @@ defmodule ExConfiguratorTest do
 
     assert result == [1, 2]
   end
+
+  test "should define function get_env_value reading string valued env var" do
+    Application.put_env(:ex_configurator, :application, :test_app)
+
+    Application.put_env(:test_app, :handler, value: {:system, :string, "TEST_VALUE", "HELLO"})
+
+    {result, _binding} =
+      Code.eval_quoted(
+        quote do
+          defmodule MyModTest1 do
+            use ExConfigurator, app: :test_app, name: :handler
+          end
+
+          MyModTest1.get_value()
+        end
+      )
+
+    assert result == "HELLO"
+  end
+
+  test "should define function get_env_value reading integer valued env var" do
+    Application.put_env(:ex_configurator, :application, :test_app)
+
+    Application.put_env(:test_app, :handler, value: {:system, :integer, "TEST_VALUE", 1})
+
+    {result, _binding} =
+      Code.eval_quoted(
+        quote do
+          defmodule MyModTest1 do
+            use ExConfigurator, app: :test_app, name: :handler
+          end
+
+          MyModTest1.get_value()
+        end
+      )
+
+    assert result == 1
+  end
 end
